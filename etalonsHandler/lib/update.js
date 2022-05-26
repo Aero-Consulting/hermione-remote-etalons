@@ -41,9 +41,5 @@ async function uploadEtalons (etalonPaths) {
 		promises.push(updateAdapter.uploadFileToLatestFolder(localPathToEtalon));
 	});
 
-	try {
-		return await Promise.allSettled(promises);
-	} catch (e) {
-		throw new Error(e);
-	}
+	await Promise.all(promises);
 }

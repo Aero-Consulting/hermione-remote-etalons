@@ -1,10 +1,12 @@
+const fetch = require('node-fetch');
+const fs = require('fs');
+const path = require('path');
+
 const YandexAPI = require('./yandexAPI');
 const makeDir = require('../utils/makeDir');
 
-const path = require('path');
-
 exports.getAllEtalonsInfo = async (screenshotsDir, etalonsFolder) => {
-	let allFiles = await YandexAPI.getAllFilesRequests();
+	let allFiles = await YandexAPI.getAllFiles();
 
 	const byDirAndEthalons = (item) => {
 		return item.path.includes(`${etalonsFolder}/${screenshotsDir}`);
@@ -15,18 +17,12 @@ exports.getAllEtalonsInfo = async (screenshotsDir, etalonsFolder) => {
 
 exports.downloadAndSaveEthalon = async (ethalon) => {
 	const screenshotPath = `${process.cwd()}${ethalon.path}`;
+	const screenshotDir = path.dirname(screenshotPath);
 
-	const screenshotDir = ethalon.path
-		// Delete last slash in name if exist
-		.replace(/([\/]+$)/, '')
-		// Delete file name
-		.replace(/([^\/]+$)/, '');
-
-	const fullPathToDir = `${process.cwd()}${screenshotDir}`;
-
-	makeDir(fullPathToDir);
+	await makeDir(screenshotDir);
 
 	const downloadEtalon = await fetch(ethalon.link);
+	console.log(`Downloading etalon to ${screenshotPath}`);
 
 	return await downloadEtalon.body.pipe(fs.createWriteStream(screenshotPath));
 };

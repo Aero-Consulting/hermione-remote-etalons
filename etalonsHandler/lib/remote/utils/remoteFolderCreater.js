@@ -1,5 +1,3 @@
-const path = require('path');
-
 const YandexAPI = require('./../yandexAPI');
 
 const pathExistError = 'DiskPathPointsToExistentDirectoryError';
@@ -10,7 +8,6 @@ module.exports = async function foldersCreater (
 	dirsToCreate = [],
 	goodResponses = []
 ) {
-	pathToCreate = path.normilize(pathToCreate);
 	const response = await YandexAPI.createFolderRequest(pathToCreate);
 
 	if (response.error == pathExistError) {
@@ -26,7 +23,7 @@ module.exports = async function foldersCreater (
 
 		dirsToCreate.push(pathToCreate);
 
-		const newPath = path.normalize(pathToCreate);
+		const newPath = pathToCreate.substring(0, pathToCreate.lastIndexOf('/'));
 
 		return await foldersCreater(newPath, dirsToCreate, goodResponses);
 	}

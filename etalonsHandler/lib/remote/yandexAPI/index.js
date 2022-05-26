@@ -1,7 +1,6 @@
 const fs = require('fs');
 const fetch = require('node-fetch');
-
-const makeDir = require('../../utils/makeDir');
+const path = require('path');
 
 const YandexAPIRequester = require('./apiRequester');
 
@@ -13,16 +12,15 @@ AUTH_KEY ||= 'AQAEA7qkFaN4AADLW-dUTe0IvkuFoWQfto8BsGU';
 
 const apiRequester = new YandexAPIRequester(AUTH_KEY);
 
-exports.createFolderRequest = async (path) => {
-	const fullPath = `${FOLDER_NAME}${path}`;
-
-	console.log(`[Yandex API Request] Creating folder ${path}`);
+exports.createFolderRequest = async (folderPath) => {
+	const fullPath = path.normalize(`${FOLDER_NAME}${folderPath}`);
+	console.log(`[Yandex API Request] Creating folder ${folderPath}`);
 
 	return await apiRequester.put(`/resources?path=${fullPath}`);
 };
 
-exports.getUploadLinkRequest = async (path) => {
-	const uploadPath = `${FOLDER_NAME}${path}`;
+exports.getUploadLinkRequest = async (etalonPath) => {
+	const uploadPath = path.normalize(`${FOLDER_NAME}${etalonPath}`);
 
 	console.log(`[Yandex API Request] Get upload link for ${uploadPath}`);
 
@@ -33,8 +31,8 @@ exports.getUploadLinkRequest = async (path) => {
 };
 
 exports.postCopyRequest = async (fromPath, toPath) => {
-	const fullFromPath = `${FOLDER_NAME}/${fromPath}`;
-	const fullToPath = `${FOLDER_NAME}/${toPath}`;
+	const fullFromPath = path.normalize(`${FOLDER_NAME}/${fromPath}`);
+	const fullToPath = path.normalize(`${FOLDER_NAME}/${toPath}`);
 
 	console.log(
 		`[Yandex API Request] Copyng a ${fullFromPath} to ${fullToPath} folder`
@@ -66,15 +64,7 @@ exports.putUploadFileRequest = async (uploadLink, fullFilePath) => {
 	}
 };
 
-exports.getFilesRequest = async (offset = 0) => {
-	console.log(
-		`[Yandex API Request] Make all files request with offset ${offset}`
-	);
-
-	return await apiRequester.get(`/resources/files?limit=1000&offset=${offset}`);
-};
-
-exports.getAllFilesRequests = async (allFilesResponse = [], offset = 0) => {
+exports.getAllFiles = async (allFilesResponse = [], offset = 0) => {
 	const response = await getFilesRequest(offset);
 
 	const files = response.items;
@@ -88,3 +78,11 @@ exports.getAllFilesRequests = async (allFilesResponse = [], offset = 0) => {
 
 	return allFilesResponse;
 };
+
+async function getFilesRequest (offset = 0) {
+	console.log(
+		`[Yandex API Request] Make all files request with offset ${offset}`
+	);
+
+	return await apiRequester.get(`/resources/files?limit=1000&offset=${offset}`);
+}
