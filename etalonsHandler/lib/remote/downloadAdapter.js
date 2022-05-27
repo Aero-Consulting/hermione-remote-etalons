@@ -8,18 +8,16 @@ const makeDir = require('../utils/makeDir');
 exports.getAllEtalonsInfo = async (screenshotsDir, etalonsFolder) => {
 	let allFiles = await YandexAPI.getAllFiles();
 
-	const byDirAndEthalons = (item) => {
+	return allFiles.filter((item) => {
 		return item.path.includes(`${etalonsFolder}/${screenshotsDir}`);
-	};
-
-	return allFiles.filter(byDirAndEthalons);
+	});
 };
 
 exports.downloadAndSaveEthalon = async (ethalon) => {
 	const screenshotPath = `${process.cwd()}${ethalon.path}`;
 	const screenshotDir = path.dirname(screenshotPath);
 
-	await makeDir(screenshotDir);
+	makeDir(screenshotDir);
 
 	const downloadEtalon = await fetch(ethalon.link);
 	console.log(`Downloading etalon to ${screenshotPath}`);

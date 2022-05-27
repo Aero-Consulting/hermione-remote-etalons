@@ -44,8 +44,8 @@ exports.postCopyRequest = async (fromPath, toPath) => {
 };
 
 exports.putUploadFileRequest = async (uploadLink, fullFilePath) => {
-	const fileStat = await fs.statSync(fullFilePath);
-	const fileStream = await fs.readFileSync(fullFilePath);
+	const fileStat = fs.statSync(fullFilePath);
+	const fileStream = fs.readFileSync(fullFilePath);
 
 	console.log(`[Yandex API Request] Upload File ${fullFilePath}`);
 
@@ -64,19 +64,19 @@ exports.putUploadFileRequest = async (uploadLink, fullFilePath) => {
 	}
 };
 
-exports.getAllFiles = async (allFilesResponse = [], offset = 0) => {
+exports.getAllFiles = async (preFilesResponses = [], offset = 0) => {
 	const response = await getFilesRequest(offset);
 
 	const files = response.items;
 	const reqLimit = response.limit;
 
-	allFilesResponse.push(...response.items);
+	const allFilesResponses = [...preFilesResponses, ...files];
 
 	// If limit is same as returned items - make another request with offset
 	if (files.length === reqLimit)
-		return getAllFilesRequests(allFilesResponse, reqLimit + offset);
+		return getAllFilesRequests(allFilesResponses, reqLimit + offset);
 
-	return allFilesResponse;
+	return allFilesResponses;
 };
 
 async function getFilesRequest (offset = 0) {

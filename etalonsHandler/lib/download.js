@@ -29,15 +29,9 @@ module.exports = async (screenshotsDir, etalonsFolder) => {
 
 	const etalonsPathAndLinks = etalonsInfo.map(pathsAndLinks);
 
-	return await downloadEtalons(etalonsPathAndLinks);
-};
-
-async function downloadEtalons (etalonsPathAndLinks) {
-	const promises = [];
-
-	for (const etalon of etalonsPathAndLinks) {
-		promises.push(downloadAdapter.downloadAndSaveEthalon(etalon));
-	}
+	const promises = etalonsPathAndLinks.map((i) =>
+		downloadAdapter.downloadAndSaveEthalon(i)
+	);
 
 	return await Promise.all(promises);
-}
+};

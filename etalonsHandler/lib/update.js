@@ -27,19 +27,13 @@ module.exports = async (screenshotsDir) => {
 	}
 
 	console.log('[remote-etalons] uploading folders');
-	const uploadResults = await uploadEtalons(localEtalonPaths);
+	const promises = localEtalonPaths.map((i) =>
+		updateAdapter.uploadFileToLatestFolder(i)
+	);
+
+	const uploadResults = await Promise.all(promises);
 
 	await updateAdapter.copyLatestToTodayFolder();
 
 	return uploadResults;
 };
-
-async function uploadEtalons (etalonPaths) {
-	let promises = [];
-
-	etalonPaths.forEach(async (localPathToEtalon) => {
-		promises.push(updateAdapter.uploadFileToLatestFolder(localPathToEtalon));
-	});
-
-	await Promise.all(promises);
-}
