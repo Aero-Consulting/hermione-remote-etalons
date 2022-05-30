@@ -13,6 +13,9 @@ module.exports = async (hermione, opts) => {
 	const updateRefs = RuntimeConfig.getInstance().updateRefs;
 	const etalonFolder = opts.etalonFolder ? opts.etalonFolder : 'latest';
 
+	// Delete/Empty etalon folder
+	await etalonsHandler.makeMainFolder(screenshotsDir);
+
 	// if update refs - handle at the end of
 	const hermioneEvent = updateRefs
 		? hermione.events.RUNNER_END

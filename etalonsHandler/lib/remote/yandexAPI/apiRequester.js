@@ -9,29 +9,32 @@ DISK_PATHNAME = process.env.DISK_PATHNAME
 	: '/v1/disk';
 
 class YandexAPIRequester {
-	constructor (authKey, moreOptions) {
+	constructor (authKey) {
 		const url = new URL(`${API_URL}${DISK_PATHNAME}`);
 
-		const defaultOptions = {
+		const options = {
 			headers: {
 				Authorization: `OAuth ${authKey}`,
 			},
 			Accept: 'application/json',
 		};
 
-		const options = { ...defaultOptions, ...moreOptions };
-
 		this.url = url;
 		this.options = options;
 	}
 
-	async post (pathname, bodyData = null) {
+	async #request (method, pathname = '', query = '', options = {}) {
+		let requestParams = {
+			method,
+			...this.options,
+			...options,
+		};
+
 		try {
-			const response = await fetch(`${this.url.href}${pathname}`, {
-				...this.options,
-				method: 'POST',
-				body: bodyData,
-			});
+			const response = await fetch(
+				`${this.url.href}${pathname}${query}`,
+				requestParams
+			);
 
 			const data = await response.json();
 			return data;
@@ -40,33 +43,18 @@ class YandexAPIRequester {
 		}
 	}
 
-	async put (pathname = '', bodyData = null) {
-		try {
-			const response = await fetch(`${this.url.href}${pathname}`, {
-				...this.options,
-				method: 'PUT',
-				body: bodyData,
-			});
-
-			const data = await response.json();
-			return data;
-		} catch (e) {
-			throw Error(e);
-		}
+	async post (pathName, body = null) {
+		return this.#request('POST', pathName, { body });
 	}
 
-	async get (pathname = '', query = '') {
-		try {
-			const response = await fetch(`${this.url.href}${pathname}${query}`, {
-				...this.options,
-				method: 'GET',
-			});
+	async put (pathName, body = null) {
+		return this.#request('PUT', pathName, { body });
+	}
 
-			const data = await response.json();
-			return data;
-		} catch (e) {
-			throw Error(e);
-		}
+	async get (pathName, query = '') {
+		const fullPathName = pathName + query;
+
+		return await this.#request('GET', fullPathName);
 	}
 }
 

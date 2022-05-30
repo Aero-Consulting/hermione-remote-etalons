@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const fs = require('fs');
 const fetch = require('node-fetch');
 const path = require('path');
@@ -5,10 +7,11 @@ const path = require('path');
 const YandexAPIRequester = require('./apiRequester');
 
 let FOLDER_NAME = process.env.FOLDER_NAME;
-FOLDER_NAME ||= '/etalons';
+if (!FOLDER_NAME)
+	throw Error('Empty FOLDER_NAME. I dont know where look for etalons ');
 
 let AUTH_KEY = process.env.AUTH_KEY;
-AUTH_KEY ||= 'AQAEA7qkFaN4AADLW-dUTe0IvkuFoWQfto8BsGU';
+if (!AUTH_KEY) throw Error('Empty AUTH_KEY. I cant connect to Yandex Disk');
 
 const apiRequester = new YandexAPIRequester(AUTH_KEY);
 
@@ -84,5 +87,8 @@ async function getFilesRequest (offset = 0) {
 		`[Yandex API Request] Make all files request with offset ${offset}`
 	);
 
-	return await apiRequester.get(`/resources/files?limit=1000&offset=${offset}`);
+	const path = '/resources/files';
+	const query = `?limit=1000&offset=${offset}`;
+
+	return await apiRequester.get(path, query);
 }
