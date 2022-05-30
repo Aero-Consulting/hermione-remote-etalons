@@ -1,5 +1,8 @@
+const etalonsHandler = require('./etalonsHandler');
+
 const updateRefsCheck = require('./utils/updateRefsCheck');
 const RuntimeConfig = require('./utils/runtime-config');
+
 const makeMainFolder = require('./utils/makeMainFolder');
 
 module.exports = async (hermione, opts) => {
