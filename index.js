@@ -1,6 +1,6 @@
 const updateRefsCheck = require('./utils/updateRefsCheck');
 const RuntimeConfig = require('./utils/runtime-config');
-const etalonsHandler = require('./etalonsHandler');
+const makeMainFolder = require('./utils/makeMainFolder');
 
 module.exports = async (hermione, opts) => {
 	if (!opts.enabled) {
@@ -14,7 +14,7 @@ module.exports = async (hermione, opts) => {
 	const etalonFolder = opts.etalonFolder ? opts.etalonFolder : 'latest';
 
 	// Delete/Empty etalon folder
-	await etalonsHandler.makeMainFolder(screenshotsDir);
+	await makeMainFolder(screenshotsDir);
 
 	// if update refs - handle at the end of
 	const hermioneEvent = updateRefs
