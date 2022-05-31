@@ -11,11 +11,7 @@ module.exports = async (hermione, opts) => {
 	}
 
 	hermione.on(hermione.events.RUNNER_START, async () => {
-		if (!opts.folder) {
-			await makeMainFolder(screenshotsDir);
-
-			opts.folder = true;
-		}
+		await makeMainFolder(screenshotsDir);
 	});
 
 	updateRefsCheck(process.argv);
