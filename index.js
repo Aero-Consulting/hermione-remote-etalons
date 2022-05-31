@@ -3,16 +3,10 @@ const etalonsHandler = require('./etalonsHandler');
 const updateRefsCheck = require('./utils/updateRefsCheck');
 const RuntimeConfig = require('./utils/runtime-config');
 
-const makeMainFolder = require('./utils/makeMainFolder');
-
 module.exports = async (hermione, opts) => {
 	if (!opts.enabled) {
 		return;
 	}
-
-	hermione.on(hermione.events.INIT, async () => {
-		await makeMainFolder(screenshotsDir);
-	});
 
 	updateRefsCheck(process.argv);
 
