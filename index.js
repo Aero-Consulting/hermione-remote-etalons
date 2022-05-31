@@ -10,6 +10,10 @@ module.exports = async (hermione, opts) => {
 		return;
 	}
 
+	hermione.on(hermione.events.INIT, async () => {
+		await makeMainFolder(screenshotsDir);
+	});
+
 	updateRefsCheck(process.argv);
 
 	const screenshotsDir = hermione.config.screenshotsDir;
