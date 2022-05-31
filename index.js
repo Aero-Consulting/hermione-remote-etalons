@@ -10,10 +10,12 @@ module.exports = async (hermione, opts) => {
 		return;
 	}
 
-	hermione.on(hermione.events.INIT, async () => {
-		if (!opts.createFolder) await makeMainFolder(screenshotsDir);
+	hermione.on(hermione.events.RUNNER_START, async () => {
+		if (!opts.folder) {
+			await makeMainFolder(screenshotsDir);
 
-		opts.createFolder = true;
+			opts.folder = true;
+		}
 	});
 
 	updateRefsCheck(process.argv);
