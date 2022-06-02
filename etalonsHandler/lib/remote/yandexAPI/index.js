@@ -6,9 +6,9 @@ const path = require('path');
 
 const YandexAPIRequester = require('./apiRequester');
 
-let FOLDER_NAME = process.env.FOLDER_NAME;
-if (!FOLDER_NAME)
-	throw Error('Empty FOLDER_NAME. I dont know where look for etalons ');
+let YANDEX_FOLDER_NAME = process.env.YANDEX_FOLDER_NAME;
+if (!YANDEX_FOLDER_NAME)
+	throw Error('Empty YANDEX_FOLDER_NAME. I dont know where look for etalons ');
 
 let AUTH_KEY = process.env.AUTH_KEY;
 if (!AUTH_KEY) throw Error('Empty AUTH_KEY. I cant connect to Yandex Disk');
@@ -16,14 +16,14 @@ if (!AUTH_KEY) throw Error('Empty AUTH_KEY. I cant connect to Yandex Disk');
 const apiRequester = new YandexAPIRequester(AUTH_KEY);
 
 exports.createFolderRequest = async (folderPath) => {
-	const fullPath = path.normalize(`${FOLDER_NAME}${folderPath}`);
+	const fullPath = path.normalize(`${YANDEX_FOLDER_NAME}${folderPath}`);
 	console.log(`[Yandex API Request] Creating folder ${folderPath}`);
 
 	return await apiRequester.put(`/resources?path=${fullPath}`);
 };
 
 exports.getUploadLinkRequest = async (etalonPath) => {
-	const uploadPath = path.normalize(`${FOLDER_NAME}${etalonPath}`);
+	const uploadPath = path.normalize(`${YANDEX_FOLDER_NAME}${etalonPath}`);
 
 	console.log(`[Yandex API Request] Get upload link for ${uploadPath}`);
 
@@ -34,8 +34,8 @@ exports.getUploadLinkRequest = async (etalonPath) => {
 };
 
 exports.postCopyRequest = async (fromPath, toPath) => {
-	const fullFromPath = path.normalize(`${FOLDER_NAME}/${fromPath}`);
-	const fullToPath = path.normalize(`${FOLDER_NAME}/${toPath}`);
+	const fullFromPath = path.normalize(`${YANDEX_FOLDER_NAME}/${fromPath}`);
+	const fullToPath = path.normalize(`${YANDEX_FOLDER_NAME}/${toPath}`);
 
 	console.log(
 		`[Yandex API Request] Copyng a ${fullFromPath} to ${fullToPath} folder`
