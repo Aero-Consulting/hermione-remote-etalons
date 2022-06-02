@@ -18,7 +18,9 @@ module.exports = async (hermione, opts) => {
 
 	const screenshotsDir = hermione.config.screenshotsDir;
 	const updateRefs = RuntimeConfig.getInstance().updateRefs;
-	const etalonFolder = opts.etalonFolder ? opts.etalonFolder : 'latest';
+	const etalonFolder = process.env.ETALON_FOLDER
+		? process.env.ETALON_FOLDER
+		: 'latest';
 
 	// if update refs - handle at the end of
 	const hermioneEvent = updateRefs
