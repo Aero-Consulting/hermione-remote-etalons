@@ -1,0 +1,94 @@
+require('dotenv').config();
+
+const fs = require('fs');
+const fetch = require('node-fetch');
+const path = require('path');
+
+const YandexAPIRequester = require('./apiRequester');
+
+let YANDEX_FOLDER_NAME = process.env.YANDEX_FOLDER_NAME;
+if (!YANDEX_FOLDER_NAME)
+	throw Error('Empty YANDEX_FOLDER_NAME. I dont know where look for etalons ');
+
+let AUTH_KEY = process.env.AUTH_KEY;
+if (!AUTH_KEY) throw Error('Empty AUTH_KEY. I cant connect to Yandex Disk');
+
+const apiRequester = new YandexAPIRequester(AUTH_KEY);
+
+exports.createFolderRequest = async (folderPath) => {
+	const fullPath = path.normalize(`${YANDEX_FOLDER_NAME}${folderPath}`);
+	console.log(`[Yandex API Request] Creating folder ${folderPath}`);
+
+	return await apiRequester.put(`/resources?path=${fullPath}`);
+};
+
+exports.getUploadLinkRequest = async (etalonPath) => {
+	const uploadPath = path.normalize(`${YANDEX_FOLDER_NAME}${etalonPath}`);
+
+	console.log(`[Yandex API Request] Get upload link for ${uploadPath}`);
+
+	return await apiRequester.get(
+		`/resources/upload?path=${uploadPath}`,
+		'&overwrite=true'
+	);
+};
+
+exports.postCopyRequest = async (fromPath, toPath) => {
+	const fullFromPath = path.normalize(`${YANDEX_FOLDER_NAME}/${fromPath}`);
+	const fullToPath = path.normalize(`${YANDEX_FOLDER_NAME}/${toPath}`);
+
+	console.log(
+		`[Yandex API Request] Copyng a ${fullFromPath} to ${fullToPath} folder`
+	);
+
+	return await apiRequester.post(
+		`/resources/copy?from=${fullFromPath}&path=${fullToPath}&overwrite=true&force_async=true`
+	);
+};
+
+exports.putUploadFileRequest = async (uploadLink, fullFilePath) => {
+	const fileStat = fs.statSync(fullFilePath);
+	const fileStream = fs.readFileSync(fullFilePath);
+
+	console.log(`[Yandex API Request] Upload File ${fullFilePath}`);
+
+	try {
+		const response = await fetch(uploadLink, {
+			method: 'PUT',
+			headers: {
+				'Content-length': fileStat.size,
+			},
+			body: fileStream,
+		});
+
+		return response.ok;
+	} catch (error) {
+		throw Error(error);
+	}
+};
+
+exports.getAllFiles = async (preFilesResponses = [], offset = 0) => {
+	const response = await getFilesRequest(offset);
+
+	const files = response.items;
+	const reqLimit = response.limit;
+
+	const allFilesResponses = [...preFilesResponses, ...files];
+
+	// If limit is same as returned items - make another request with offset
+	if (files.length === reqLimit)
+		return getAllFilesRequests(allFilesResponses, reqLimit + offset);
+
+	return allFilesResponses;
+};
+
+async function getFilesRequest (offset = 0) {
+	console.log(
+		`[Yandex API Request] Make all files request with offset ${offset}`
+	);
+
+	const path = '/resources/files';
+	const query = `?limit=1000&offset=${offset}`;
+
+	return await apiRequester.get(path, query);
+}
