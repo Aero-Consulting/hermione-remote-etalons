@@ -3,7 +3,7 @@ const path = require('path');
 const updateAdapter = require('./remote/updateAdapter');
 const walkSync = require('./utils/walkSync');
 
-module.exports = async (screenshotsDir) => {
+module.exports = async (screenshotsDir, etalonFolder = 'latest') => {
 	console.log('[remote-etalons] Updating etalons from remote');
 
 	const localPathToScreenshots = `${process.cwd()}/${screenshotsDir}`;
@@ -23,17 +23,17 @@ module.exports = async (screenshotsDir) => {
 	}
 
 	for (const dirPath of dirsPathsSet) {
-		await updateAdapter.createEtalonFolders(dirPath);
+		await updateAdapter.createEtalonFolders(dirPath, etalonFolder);
 	}
 
 	console.log('[remote-etalons] uploading folders');
 	const promises = localEtalonPaths.map((i) =>
-		updateAdapter.uploadFileToLatestFolder(i)
+		updateAdapter.uploadFileToFolder(i, etalonFolder)
 	);
 
 	const uploadResults = await Promise.all(promises);
 
-	await updateAdapter.copyLatestToTodayFolder();
+	if (etalonFolder === 'latest') await updateAdapter.copyLatestToTodayFolder();
 
 	return uploadResults;
 };

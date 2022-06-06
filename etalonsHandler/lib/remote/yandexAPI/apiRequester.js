@@ -44,11 +44,11 @@ class YandexAPIRequester {
 	}
 
 	async post (pathName, body = null) {
-		return this.#request('POST', pathName, { body });
+		return this.#request('POST', pathName, '', { body });
 	}
 
 	async put (pathName, body = null) {
-		return this.#request('PUT', pathName, { body });
+		return this.#request('PUT', pathName, '', { body });
 	}
 
 	async get (pathName, query = '') {

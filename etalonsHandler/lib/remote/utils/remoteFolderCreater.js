@@ -12,7 +12,6 @@ module.exports = async function foldersCreater (
 
 	if (response.error == pathExistError) {
 		console.log(`[Yandex API Request] Folder ${pathToCreate} exist!`);
-		return;
 	}
 
 	if (response.error == pathNotExistError) {

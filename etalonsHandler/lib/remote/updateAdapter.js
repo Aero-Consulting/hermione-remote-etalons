@@ -1,10 +1,10 @@
 const YandexAPI = require('./yandexAPI');
 const remoteFoldersCreater = require('./utils/remoteFolderCreater');
 
-exports.uploadFileToLatestFolder = async (fullFilePath) => {
+exports.uploadFileToFolder = async (fullFilePath, etalonFolder) => {
 	const filePathToUploadLink = fullFilePath.replace(process.cwd(), '');
 
-	const uploadPath = `/latest${filePathToUploadLink}`;
+	const uploadPath = `/${etalonFolder}${filePathToUploadLink}`;
 	const uploadLinkData = await YandexAPI.getUploadLinkRequest(uploadPath);
 
 	const uploadLink = uploadLinkData.href;
@@ -21,8 +21,8 @@ exports.copyLatestToTodayFolder = async () => {
 	return await YandexAPI.postCopyRequest('latest', dateFolderName);
 };
 
-exports.createEtalonFolders = async (folderPath) => {
-	const pathToLatest = `/latest${folderPath}`;
+exports.createEtalonFolders = async (folderPath, etalonFolder) => {
+	const pathToLatest = `/${etalonFolder}${folderPath}`;
 
 	return await remoteFoldersCreater(pathToLatest);
 };

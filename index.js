@@ -29,7 +29,7 @@ module.exports = async (hermione, opts) => {
 
 	hermione.on(hermioneEvent, async () => {
 		updateRefs
-			? await etalonsHandler.updateEtalons(screenshotsDir)
+			? await etalonsHandler.updateEtalons(screenshotsDir, etalonFolder)
 			: await etalonsHandler.downloadEtalons(screenshotsDir, etalonFolder);
 	});
 };
